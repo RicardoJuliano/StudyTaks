@@ -8,8 +8,10 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Card
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -56,15 +58,27 @@ fun StudyTasksScreen(name: String, modifier: Modifier = Modifier) {
     Column( Modifier.padding(35.dp)) {
         Text(text = "Study Tasks")
 
-        for (task in tasks) {
-            Text(text = "Task ${task.id}")
-            Text(text = task.title)
-            Text(text = "Language: ${task.category}")
+        Spacer(modifier = Modifier.height(20.dp))
 
-            if (task.isDone) {
-                Text(text = "Task Completed")
-            }
-            Spacer(modifier = Modifier.height(20.dp))
+
+            for (task in tasks) {
+                Card(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(
+                        modifier = Modifier.padding(17.dp)
+                    ) {
+                        Text(text = "Task ${task.id}")
+                        Text(text = task.title)
+                        Text(text = "Language: ${task.category}")
+
+                        if (task.isDone) {
+                            Text(text = "Task Completed")
+                        }
+
+                    }
+                }
+                Spacer(modifier = Modifier.height(28.dp))
         }
     }
 
