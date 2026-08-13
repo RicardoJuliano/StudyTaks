@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -91,7 +93,7 @@ fun StudyTasksScreen(name: String, modifier: Modifier = Modifier) {
             when (selectedScreen) {
                 "Tasks" -> TasksContent()
                 "Progress" -> ProgressContent()
-                "Profile" -> Text(text = "Profile Screen")
+                "Profile" -> ProfileContent()
             }
         }
     }
@@ -100,13 +102,16 @@ fun StudyTasksScreen(name: String, modifier: Modifier = Modifier) {
 @Composable
 fun TasksContent() {
 
-    val tasks = listOf(
+    var tasks by remember { mutableStateOf(
+        listOf(
         StudyTask(1, "Review data classes", "Kotlin", false),
         StudyTask(2, "Build a list with LazyColumn", "Jetpack Compose", false),
         StudyTask(3, "Understand remember and mutableStateOf", "State and Recomposition", false),
         StudyTask(4, "Move logic into a ViewModel", "Android Architecture", false),
         StudyTask(5, "Save tasks with Room", "Local Persistence", false)
     )
+        )
+    }
 
     LazyColumn(
         modifier = Modifier.padding(40.dp),
@@ -119,27 +124,50 @@ fun TasksContent() {
             Card(
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Column(
-                    modifier = Modifier.padding(17.dp)
+                Row(
+                     modifier = Modifier.padding(17.dp)
                 ) {
-                    Text(text = "Task ${task.id}")
-                    Text(text = task.title)
-                    Text(text = "Language: ${task.category}")
+                    Checkbox(
+                        checked = task.isDone,
+                        onCheckedChange = { isChecked ->
+                            tasks = tasks.map { currentTask ->
+                                if (currentTask.id == task.id) {
+                                    currentTask.copy(isDone = isChecked)
+                                } else {
+                                    currentTask
+                                }
+                            }
+                        }
+                    )
 
-                    if (task.isDone) {
-                        Text(text = "Task Completed")
+                    Column(
+                        modifier = Modifier.padding(17.dp)
+                    ) {
+                        Text(text = "Task ${task.id}")
+                        Text(text = task.title)
+                        Text(text = "Language: ${task.category}")
+
+                        if (task.isDone) {
+                            Text(text = "Task Completed")
+                        }
+
                     }
-
                 }
             }
             Spacer(modifier = Modifier.height(28.dp))
         }
     }
 
+
 }
 @Composable
+fun ProfileContent(){
+    Text(text = "Profile")
+}
+
+@Composable
 fun ProgressContent(){
-    Text(text = "Porcentagem de progresso")
+    Text(text = "% Progress")
 }
 
 @Preview(showBackground = true)
