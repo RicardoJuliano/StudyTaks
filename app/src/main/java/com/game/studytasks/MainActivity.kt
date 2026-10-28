@@ -1,6 +1,5 @@
 package com.game.studytasks
 
-import android.R
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -39,7 +38,6 @@ class MainActivity : ComponentActivity() {
             StudyTasksTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     StudyTasksScreen(
-                        name = "Study Tasks",
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
@@ -55,13 +53,12 @@ data class StudyTask(
 )
 
 @Composable
-fun StudyTasksScreen(name: String, modifier: Modifier = Modifier) {
+fun StudyTasksScreen(modifier: Modifier = Modifier) {
 
     var selectedScreen by remember { mutableStateOf("Tasks") }
-   
-
 
     Scaffold(
+        modifier = modifier,
         bottomBar = {
             NavigationBar {
                 NavigationBarItem(
@@ -174,6 +171,6 @@ fun ProgressContent(){
 @Composable
 fun GreetingPreview() {
     StudyTasksTheme {
-        StudyTasksScreen("Android")
+        StudyTasksScreen()
     }
 }
