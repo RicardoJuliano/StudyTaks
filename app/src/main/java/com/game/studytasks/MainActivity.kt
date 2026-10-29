@@ -21,14 +21,16 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.game.studytasks.ui.TaskViewModel
 import com.game.studytasks.ui.theme.StudyTasksTheme
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -99,16 +101,10 @@ fun StudyTasksScreen(modifier: Modifier = Modifier) {
 @Composable
 fun TasksContent() {
 
-    var tasks by remember { mutableStateOf(
-        listOf(
-        StudyTask(1, "Review data classes", "Kotlin", false),
-        StudyTask(2, "Build a list with LazyColumn", "Jetpack Compose", false),
-        StudyTask(3, "Understand remember and mutableStateOf", "State and Recomposition", false),
-        StudyTask(4, "Move logic into a ViewModel", "Android Architecture", false),
-        StudyTask(5, "Save tasks with Room", "Local Persistence", false)
-    )
-        )
-    }
+    val viewModel: TaskViewModel = viewModel()
+    val tasks by viewModel.tasks.collectAsState()
+
+
 
     LazyColumn(
         modifier = Modifier.padding(40.dp),
@@ -126,15 +122,7 @@ fun TasksContent() {
                 ) {
                     Checkbox(
                         checked = task.isDone,
-                        onCheckedChange = { isChecked ->
-                            tasks = tasks.map { currentTask ->
-                                if (currentTask.id == task.id) {
-                                    currentTask.copy(isDone = isChecked)
-                                } else {
-                                    currentTask
-                                }
-                            }
-                        }
+                        onCheckedChange = {viewModel.toggleTask(task)  }
                     )
 
                     Column(
@@ -167,10 +155,3 @@ fun ProgressContent(){
     Text(text = "% Progress")
 }
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    StudyTasksTheme {
-        StudyTasksScreen()
-    }
-}

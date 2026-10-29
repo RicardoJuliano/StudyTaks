@@ -59,4 +59,5 @@ dependencies {
     implementation(project(":shared"))
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.okhttp)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
 }

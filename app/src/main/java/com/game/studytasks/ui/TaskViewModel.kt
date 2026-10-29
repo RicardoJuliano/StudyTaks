@@ -22,6 +22,18 @@ class TaskViewModel : ViewModel() {
 
         }
     }
+
+    fun toggleTask(task: Task) {
+        viewModelScope.launch {
+            val taskAtualizada = task.copy(isDone = !task.isDone)
+            repository.updateTask(task.id, taskAtualizada)
+                .onSuccess { updated ->
+                    _tasks.value = _tasks.value.map {
+                        if (it.id == updated.id) updated else it
+                    }
+                }
+        }
+    }
 }
 
 
