@@ -34,6 +34,20 @@ class TaskViewModel : ViewModel() {
                 }
         }
     }
+    fun createTask(title: String, category: String) {
+        viewModelScope.launch {
+            val newTask = Task(
+                id = java.util.UUID.randomUUID().toString(),
+                title = title,
+                category = category,
+                isDone = false
+            )
+            repository.createTask(newTask)
+                .onSuccess { created ->
+                    _tasks.value = _tasks.value + created
+                }
+        }
+    }
 }
 
 

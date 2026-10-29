@@ -1,6 +1,7 @@
 package com.game.studytasks
 
 import android.os.Bundle
+import android.service.autofill.OnClickAction
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -14,12 +15,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -27,6 +31,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.unit.dp
 import com.game.studytasks.ui.TaskViewModel
 import com.game.studytasks.ui.theme.StudyTasksTheme
@@ -103,6 +108,8 @@ fun TasksContent() {
 
     val viewModel: TaskViewModel = viewModel()
     val tasks by viewModel.tasks.collectAsState()
+    var title by remember { mutableStateOf("") }
+    var category by remember { mutableStateOf("") }
 
 
 
@@ -141,6 +148,17 @@ fun TasksContent() {
             }
             Spacer(modifier = Modifier.height(28.dp))
         }
+        item{
+            OutlinedTextField(value = title, onValueChange = { title = it }, label = { Text("Título") })
+            OutlinedTextField(value = category, onValueChange = { category = it }, label = { Text("Categoria") })
+            Button(onClick = {viewModel.createTask(title, category)
+                title = ""
+                category = ""
+            }) {
+                Text("Adcionar")
+            }
+        }
+
     }
 
 
