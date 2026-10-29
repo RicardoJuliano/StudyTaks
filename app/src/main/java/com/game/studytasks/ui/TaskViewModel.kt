@@ -48,6 +48,14 @@ class TaskViewModel : ViewModel() {
                 }
         }
     }
+    fun deleteTask(id: String) {
+        viewModelScope.launch {
+            repository.deleteTask(id)
+                .onSuccess {
+                    _tasks.value = _tasks.value.filter { it.id != id }
+                }
+        }
+    }
 }
 
 

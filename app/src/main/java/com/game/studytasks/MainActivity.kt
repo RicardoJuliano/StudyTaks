@@ -125,7 +125,7 @@ fun TasksContent() {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Row(
-                     modifier = Modifier.padding(17.dp)
+                     modifier = Modifier.padding(5.dp)
                 ) {
                     Checkbox(
                         checked = task.isDone,
@@ -144,6 +144,12 @@ fun TasksContent() {
                         }
 
                     }
+
+                        Button(onClick = { viewModel.deleteTask(task.id) }) {
+                            Text("Remover")
+                        }
+
+
                 }
             }
             Spacer(modifier = Modifier.height(28.dp))
