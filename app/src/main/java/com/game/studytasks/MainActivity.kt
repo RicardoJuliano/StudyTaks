@@ -52,6 +52,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
 data class StudyTask(
     val id: Int,
     val title: String,
@@ -103,6 +104,7 @@ fun StudyTasksScreen(modifier: Modifier = Modifier) {
     }
 
 }
+
 @Composable
 fun TasksContent() {
 
@@ -118,22 +120,26 @@ fun TasksContent() {
         verticalArrangement = Arrangement.spacedBy(9.dp)
     ) {
 
-        item{  Text(text = "Study Tasks")}
+        item { Text(text = "Study Tasks") }
 
-        items(tasks){ task ->
+        items(tasks) { task ->
             Card(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Row(
-                     modifier = Modifier.padding(5.dp)
+                    modifier = Modifier
+                        .padding(5.dp)
+
                 ) {
                     Checkbox(
                         checked = task.isDone,
-                        onCheckedChange = {viewModel.toggleTask(task)  }
+                        onCheckedChange = { viewModel.toggleTask(task) }
                     )
 
                     Column(
-                        modifier = Modifier.padding(17.dp)
+                        modifier = Modifier
+                            .padding(17.dp)
+                            .weight(1f)
                     ) {
                         Text(text = "Task ${task.id}")
                         Text(text = task.title)
@@ -145,19 +151,26 @@ fun TasksContent() {
 
                     }
 
-                        Button(onClick = { viewModel.deleteTask(task.id) }) {
-                            Text("Remover")
-                        }
+                    Button(onClick = { viewModel.deleteTask(task.id) }) {
+                        Text("Remover")
+                    }
 
 
                 }
             }
             Spacer(modifier = Modifier.height(28.dp))
         }
-        item{
-            OutlinedTextField(value = title, onValueChange = { title = it }, label = { Text("Título") })
-            OutlinedTextField(value = category, onValueChange = { category = it }, label = { Text("Categoria") })
-            Button(onClick = {viewModel.createTask(title, category)
+        item {
+            OutlinedTextField(
+                value = title,
+                onValueChange = { title = it },
+                label = { Text("Título") })
+            OutlinedTextField(
+                value = category,
+                onValueChange = { category = it },
+                label = { Text("Categoria") })
+            Button(onClick = {
+                viewModel.createTask(title, category)
                 title = ""
                 category = ""
             }) {
@@ -169,13 +182,14 @@ fun TasksContent() {
 
 
 }
+
 @Composable
-fun ProfileContent(){
+fun ProfileContent() {
     Text(text = "Profile")
 }
 
 @Composable
-fun ProgressContent(){
+fun ProgressContent() {
     Text(text = "% Progress")
 }
 
