@@ -1,7 +1,6 @@
 package com.game.studytasks.data
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -15,6 +14,6 @@ interface TaskDao{
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(tasks: List<TaskEntity>)
 
-    @Delete
-    suspend fun delete(tasks: TaskEntity)
+    @Query ("DELETE FROM tasks WHERE id =:id ")
+    suspend fun delete(id: String)
 }

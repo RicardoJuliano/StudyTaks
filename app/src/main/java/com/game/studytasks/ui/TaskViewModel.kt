@@ -1,7 +1,9 @@
 package com.game.studytasks.ui
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.game.studytasks.StudyTasksApplication
 import com.game.studytasks.data.TaskRepository
 import com.game.studytasks.shared.Task
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -9,17 +11,20 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 
-class TaskViewModel : ViewModel() {
-    private val repository = TaskRepository()
+class TaskViewModel(application: Application) : AndroidViewModel(application) {
+    private val dao = getApplication<StudyTasksApplication>().database.taskDao()
+    private val repository = TaskRepository(dao)
+
 
     private val _tasks = MutableStateFlow<List<Task>>(emptyList())
     val tasks: StateFlow<List<Task>> = _tasks
 
     init {
         viewModelScope.launch {
-            repository.getTask()
-                .onSuccess { _tasks.value = it }
-
+            repository.observeTask().collect { _tasks.value = it }
+        }
+        viewModelScope.launch {
+            repository.refreshTask()
         }
     }
 
@@ -27,11 +32,7 @@ class TaskViewModel : ViewModel() {
         viewModelScope.launch {
             val taskAtualizada = task.copy(isDone = !task.isDone)
             repository.updateTask(task.id, taskAtualizada)
-                .onSuccess { updated ->
-                    _tasks.value = _tasks.value.map {
-                        if (it.id == updated.id) updated else it
-                    }
-                }
+                .onSuccess {}
         }
     }
     fun createTask(title: String, category: String) {
@@ -43,17 +44,13 @@ class TaskViewModel : ViewModel() {
                 isDone = false
             )
             repository.createTask(newTask)
-                .onSuccess { created ->
-                    _tasks.value = _tasks.value + created
-                }
+                .onSuccess {}
         }
     }
     fun deleteTask(id: String) {
         viewModelScope.launch {
             repository.deleteTask(id)
-                .onSuccess {
-                    _tasks.value = _tasks.value.filter { it.id != id }
-                }
+                .onSuccess {}
         }
     }
 }
