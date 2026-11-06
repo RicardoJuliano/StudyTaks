@@ -1,7 +1,6 @@
 package com.game.studytasks
 
 import android.os.Bundle
-import android.service.autofill.OnClickAction
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -18,12 +17,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -31,11 +30,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.game.studytasks.ui.TaskViewModel
 import com.game.studytasks.ui.theme.StudyTasksTheme
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.ui.graphics.Color
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,12 +52,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-data class StudyTask(
-    val id: Int,
-    val title: String,
-    val category: String,
-    val isDone: Boolean
-)
+
 
 @Composable
 fun StudyTasksScreen(modifier: Modifier = Modifier) {
@@ -112,6 +106,8 @@ fun TasksContent() {
     val tasks by viewModel.tasks.collectAsState()
     var title by remember { mutableStateOf("") }
     var category by remember { mutableStateOf("") }
+    val isLoading by viewModel.isLoading.collectAsState()
+    val errorMessage by viewModel.errorMessage.collectAsState()
 
 
 
@@ -121,6 +117,12 @@ fun TasksContent() {
     ) {
 
         item { Text(text = "Study Tasks") }
+        item { if (isLoading) {
+            CircularProgressIndicator()
+        }
+            errorMessage?.let { msg ->
+                Text(text = msg, color = Color.Red)
+            } }
 
         items(tasks) { task ->
             Card(
@@ -170,9 +172,11 @@ fun TasksContent() {
                 onValueChange = { category = it },
                 label = { Text("Categoria") })
             Button(onClick = {
-                viewModel.createTask(title, category)
-                title = ""
-                category = ""
+                if (title.isNotBlank() && category.isNotBlank()) {
+                    viewModel.createTask(title, category)
+                    title = ""
+                    category = ""
+                }
             }) {
                 Text("Adcionar")
             }
@@ -185,11 +189,22 @@ fun TasksContent() {
 
 @Composable
 fun ProfileContent() {
-    Text(text = "Profile")
+    Column(modifier = Modifier.padding(16.dp)) {
+        Text(text = "Ricardo Juliano")
+        Text(text = "App de estudo criado em Kotlin + Compose")
+    }
 }
+
 
 @Composable
 fun ProgressContent() {
-    Text(text = "% Progress")
+
+    val viewModel: TaskViewModel = viewModel()
+    val tasks by viewModel.tasks.collectAsState()
+    val concluidas = tasks.count { it.isDone }
+    val total = tasks.size
+    val percentual = if (total > 0) (concluidas * 100) / total else 0
+
+    Text(text = "$concluidas de $total tasks concluídas ($percentual%)")
 }
 

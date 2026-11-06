@@ -14,7 +14,11 @@ import kotlinx.coroutines.launch
 class TaskViewModel(application: Application) : AndroidViewModel(application) {
     private val dao = getApplication<StudyTasksApplication>().database.taskDao()
     private val repository = TaskRepository(dao)
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
 
+    private val _errorMessage = MutableStateFlow<String?>(null)
+    val errorMessage: StateFlow<String?> = _errorMessage
 
     private val _tasks = MutableStateFlow<List<Task>>(emptyList())
     val tasks: StateFlow<List<Task>> = _tasks
@@ -24,19 +28,28 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
             repository.observeTask().collect { _tasks.value = it }
         }
         viewModelScope.launch {
+            _isLoading.value = true
+            _errorMessage.value = null
             repository.refreshTask()
+                .onFailure { _errorMessage.value = "Não foi possível sincronizar com o servidor. Mostrando dados salvos." }
+            _isLoading.value = false
         }
     }
 
     fun toggleTask(task: Task) {
         viewModelScope.launch {
+            _isLoading.value = true
+            _errorMessage.value = null
             val taskAtualizada = task.copy(isDone = !task.isDone)
             repository.updateTask(task.id, taskAtualizada)
-                .onSuccess {}
+                .onFailure { _errorMessage.value = "Não foi possível atualizar a task. Verifique sua conexão." }
+            _isLoading.value = false
         }
     }
     fun createTask(title: String, category: String) {
         viewModelScope.launch {
+            _isLoading.value = true
+            _errorMessage.value = null
             val newTask = Task(
                 id = java.util.UUID.randomUUID().toString(),
                 title = title,
@@ -44,13 +57,17 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
                 isDone = false
             )
             repository.createTask(newTask)
-                .onSuccess {}
+                .onFailure { _errorMessage.value = "Não foi possível criar a task. Verifique sua conexão." }
+            _isLoading.value = false
         }
     }
     fun deleteTask(id: String) {
         viewModelScope.launch {
+            _isLoading.value = true
+            _errorMessage.value = null
             repository.deleteTask(id)
-                .onSuccess {}
+                .onFailure { _errorMessage.value = "Não foi possível deletar a task. Verifique sua conexão." }
+            _isLoading.value = false
         }
     }
 }
