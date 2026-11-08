@@ -122,7 +122,9 @@ fun TasksContent() {
         }
             errorMessage?.let { msg ->
                 Text(text = msg, color = Color.Red)
-            } }
+                Button(onClick = {viewModel.syncWithServer()}) {Text("Sincronizar") }
+            }
+       }
 
         items(tasks) { task ->
             Card(
